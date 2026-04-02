@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { 
-  Plus, Search, Filter, Trash2, Edit3, X, 
-  ArrowUpRight, ArrowDownLeft, CheckCircle2 
+  Plus, Search, Trash2, Edit3, X, 
+  CheckCircle2, CreditCard, Calendar, Tag 
 } from "lucide-react";
 
 const initialTransactions = [
@@ -24,7 +24,7 @@ export default function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [formData, setFormData] = useState({ date: "", category: "", amount: "", type: "expense" });
-  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
+  const [toast, setToast] = useState({ message: "", visible: false });
 
   useEffect(() => {
     const savedData = localStorage.getItem("transactionData");
@@ -51,17 +51,6 @@ export default function TransactionsPage() {
   const openAddModal = () => {
     setEditingTransaction(null);
     setFormData({ date: new Date().toISOString().split('T')[0], category: "", amount: "", type: "expense" });
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (transaction: any) => {
-    setEditingTransaction(transaction);
-    setFormData({ 
-      date: transaction.date, 
-      category: transaction.category, 
-      amount: transaction.amount.toString(), 
-      type: transaction.type 
-    });
     setIsModalOpen(true);
   };
 
@@ -101,41 +90,40 @@ export default function TransactionsPage() {
   if (!isLoaded) return null;
 
   return (
-    <div className="space-y-6 relative pb-10 max-w-full">
-      {/* --- TOAST NOTIFICATION --- */}
+    <div className="space-y-6 pb-10">
+      {/* Toast */}
       {toast.visible && (
-        <div className="fixed top-20 right-4 left-4 md:left-auto md:right-6 z-[200] flex items-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-top-10 md:slide-in-from-right-full duration-300">
-          <CheckCircle2 className="text-green-400 shrink-0" size={20} />
-          <span className="text-sm font-semibold">{toast.message}</span>
+        <div className="fixed top-10 right-1/2 translate-x-1/2 md:translate-x-0 md:right-10 z-[200] bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
+          <CheckCircle2 className="text-green-400" size={18} />
+          <span className="text-sm font-medium">{toast.message}</span>
         </div>
       )}
 
-      {/* --- HEADER --- */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-1">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Transactions</h2>
-          <p className="text-sm text-gray-500">Manage your financial records.</p>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Transactions</h2>
+          <p className="text-sm text-gray-500 font-medium">History of your financial records</p>
         </div>
         {role === "admin" && (
-          <button onClick={openAddModal} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-bold shadow-lg transition-all active:scale-95">
-            <Plus size={20} /> Add Transaction
+          <button onClick={openAddModal} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-green-100 transition-all flex items-center justify-center gap-2 active:scale-95">
+            <Plus size={18} /> Add Transaction
           </button>
         )}
       </div>
 
-      {/* --- FILTERS --- */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white p-3 rounded-[24px] border border-gray-100 shadow-sm mx-1">
-        <div className="md:col-span-3 relative">
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input 
-            type="text" 
-            placeholder="Search category..." 
-            className="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-green-500/20 outline-none font-medium"
+            type="text" placeholder="Search category..." 
+            className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-green-500/20 font-medium text-gray-700 shadow-sm"
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <select 
-          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold outline-none cursor-pointer" 
+          className="bg-white border border-gray-100 rounded-xl px-4 py-2.5 font-bold text-gray-600 outline-none shadow-sm cursor-pointer"
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="all">All Types</option>
@@ -144,83 +132,98 @@ export default function TransactionsPage() {
         </select>
       </div>
 
-      {/* --- RESPONSIVE TABLE --- */}
-      <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden mx-1">
-        <div className="w-full overflow-x-auto">
-          <table className="w-full text-left min-w-[750px] border-collapse">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
-                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</th>
-                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</th>
-                <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
-                {role === "admin" ? (
-                  <th className="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                ) : null}
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-gray-50/50 border-b border-gray-100">
+            <tr>
+              <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+              <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</th>
+              <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Type</th>
+              <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Amount</th>
+              {role === "admin" && <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {filteredData.map((t) => (
+              <tr key={t.id} className="hover:bg-gray-50/30 transition-colors">
+                <td className="px-6 py-4 text-sm font-medium text-gray-400">{t.date}</td>
+                <td className="px-6 py-4 text-sm font-bold text-gray-900">{t.category}</td>
+                <td className="px-6 py-4 text-center">
+                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${t.type === 'income' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{t.type}</span>
+                </td>
+                <td className={`px-6 py-4 text-sm font-black text-right ${t.type === 'income' ? 'text-green-600' : 'text-gray-900'}`}>
+                  {t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}
+                </td>
+                {role === "admin" && (
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => { setEditingTransaction(t); setFormData({ date: t.date, category: t.category, amount: t.amount.toString(), type: t.type }); setIsModalOpen(true); }} className="p-2 text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit3 size={16}/></button>
+                      <button onClick={() => deleteTransaction(t.id)} className="p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16}/></button>
+                    </div>
+                  </td>
+                )}
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filteredData.map((t) => (
-                <tr key={t.id} className="hover:bg-gray-50/30 transition-colors">
-                  <td className="px-6 py-4 text-xs font-medium text-gray-500 whitespace-nowrap">{t.date}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-bold whitespace-nowrap">{t.category}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase ${
-                      t.type === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {t.type}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 text-sm font-black whitespace-nowrap ${t.type === 'income' ? 'text-green-600' : 'text-gray-900'}`}>
-                    {t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}
-                  </td>
-                  {role === "admin" ? (
-                    <td className="px-6 py-4 text-right whitespace-nowrap">
-                      <div className="flex justify-end gap-1">
-                        <button onClick={() => openEditModal(t)} className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"><Edit3 size={16} /></button>
-                        <button onClick={() => deleteTransaction(t.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
-                      </div>
-                    </td>
-                  ) : null}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* --- FORM MODAL --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-900/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
-            <div className="flex items-center justify-between p-6 sm:p-8 border-b border-gray-50">
-              <h3 className="text-xl font-black text-gray-900">{editingTransaction ? "Edit Entry" : "New Entry"}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {filteredData.map((t) => (
+          <div key={t.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t.date}</p>
+                <h4 className="font-bold text-gray-900">{t.category}</h4>
+              </div>
+              <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${t.type === 'income' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{t.type}</span>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category Name</label>
-                <input required type="text" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount ($)</label>
-                  <input required type="number" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
+            <div className="flex justify-between items-center border-t border-gray-50 pt-3">
+              <p className={`text-lg font-black ${t.type === 'income' ? 'text-green-600' : 'text-gray-900'}`}>
+                {t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}
+              </p>
+              {role === "admin" && (
+                <div className="flex gap-2">
+                  <button onClick={() => { setEditingTransaction(t); setFormData({ date: t.date, category: t.category, amount: t.amount.toString(), type: t.type }); setIsModalOpen(true); }} className="p-2 bg-gray-50 text-gray-400 rounded-xl"><Edit3 size={16}/></button>
+                  <button onClick={() => deleteTransaction(t.id)} className="p-2 bg-red-50 text-red-500 rounded-xl"><Trash2 size={16}/></button>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</label>
-                  <input required type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modern Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-900">{editingTransaction ? "Edit Record" : "New Entry"}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-50 rounded-full text-gray-400"><X size={20}/></button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Category</label>
+                <input required type="text" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl mt-1 font-semibold text-gray-900 focus:ring-2 focus:ring-green-500/20" placeholder="e.g. Shopping" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Amount</label>
+                  <input required type="number" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl mt-1 font-semibold text-gray-900 focus:ring-2 focus:ring-green-500/20" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Date</label>
+                  <input required type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl mt-1 font-semibold text-gray-900 focus:ring-2 focus:ring-green-500/20" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</label>
-                <div className="grid grid-cols-2 gap-2 p-1.5 bg-gray-50 rounded-2xl">
-                  <button type="button" onClick={() => setFormData({...formData, type: 'income'})} className={`py-3 rounded-xl text-[10px] font-black transition-all ${formData.type === 'income' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-400'}`}>INCOME</button>
-                  <button type="button" onClick={() => setFormData({...formData, type: 'expense'})} className={`py-3 rounded-xl text-[10px] font-black transition-all ${formData.type === 'expense' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-400'}`}>EXPENSE</button>
-                </div>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-gray-50 rounded-xl">
+                <button type="button" onClick={() => setFormData({...formData, type: 'income'})} className={`py-2 rounded-lg text-xs font-bold transition-all ${formData.type === 'income' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-400'}`}>Income</button>
+                <button type="button" onClick={() => setFormData({...formData, type: 'expense'})} className={`py-2 rounded-lg text-xs font-bold transition-all ${formData.type === 'expense' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-400'}`}>Expense</button>
               </div>
-              <button type="submit" className="w-full py-5 bg-green-600 hover:bg-green-700 text-white font-black rounded-[20px] shadow-xl shadow-green-100 transition-all active:scale-95">
-                {editingTransaction ? "SAVE CHANGES" : "ADD TRANSACTION"}
+              <button type="submit" className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-2xl shadow-lg shadow-green-100 transition-all active:scale-95">
+                {editingTransaction ? "Save Changes" : "Create Transaction"}
               </button>
             </form>
           </div>
