@@ -50,7 +50,7 @@ export default function LoginPage() {
                   type="text"
                   placeholder="John Doe"
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500/20 outline-none font-semibold"
+                  className="border-2 border-black w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 rounded-2xl focus:ring-2 focus:ring-green-500/20 outline-none font-semibold"
                 />
               </div>
             </div>
@@ -65,7 +65,7 @@ export default function LoginPage() {
                   type="email"
                   placeholder="john@example.com"
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500/20 outline-none font-semibold"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 rounded-2xl focus:ring-2 focus:ring-green-500/20 outline-none font-semibold"
                 />
               </div>
             </div>

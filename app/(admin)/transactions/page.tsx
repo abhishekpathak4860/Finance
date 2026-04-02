@@ -200,16 +200,16 @@ export default function TransactionsPage() {
             <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category Name</label>
-                <input required type="text" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
+                <input required type="text" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount ($)</label>
-                  <input required type="number" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
+                  <input required type="number" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</label>
-                  <input required type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
+                  <input required type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-5 py-4 bg-gray-50 border-2 rounded-2xl outline-none font-semibold focus:ring-2 focus:ring-green-500/20" />
                 </div>
               </div>
               <div className="space-y-2">
