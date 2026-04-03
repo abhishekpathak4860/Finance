@@ -1,23 +1,16 @@
 @import "tailwindcss";
 
+/* THE FIX: It MUST be @custom-variant in Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* v4 mein agar aap custom variables add kar rahe ho toh yahan karo */
   --color-background: #ffffff;
   --color-foreground: #0f172a;
-
-  /* Ye ensure karta hai ki Tailwind ke default colors (green, zinc, etc.) load ho rahe hain */
 }
 
-/* Base styles */
 @layer base {
-  :root {
-    --background: #ffffff;
-    --foreground: #0f172a;
-  }
-
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    @apply antialiased bg-white dark:bg-zinc-950;
     font-family: Arial, Helvetica, sans-serif;
   }
 }
